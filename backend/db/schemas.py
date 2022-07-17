@@ -1,5 +1,4 @@
 from datetime import date
-from uuid import UUID
 from pydantic import BaseModel
 
 
@@ -40,7 +39,7 @@ class Diary(DiaryBase):
 
 class UserBase(BaseModel):
     nickname: str
-    uuid: UUID
+    uuid: str
 
 
 class UserCreate(UserBase):

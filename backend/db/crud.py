@@ -7,7 +7,10 @@ def get_user(db: Session, user_id: int):
 
 
 def get_user_by_nickname(db: Session, nickname: str):
-    return db.query(models.User).filter(models.User.nickname == nickname).first()
+    return db \
+        .query(models.User) \
+        .filter(models.User.nickname == nickname) \
+        .first()
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -16,3 +19,20 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user_chats(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db \
+        .query(models.Chat) \
+        .filter(models.Chat.user_id == user_id) \
+        .offset(skip) \
+        .limit(limit) \
+        .all()
+
+
+def create_user_chat(db: Session, chat: schemas.ChatCreate, user_id: int):
+    db_chat = models.Chat(**chat.dict(), user_id=user_id)
+    db.add(db_chat)
+    db.commit()
+    db.refresh(db_chat)
+    return db_chat

@@ -8,7 +8,7 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     nickname = Column(String(255), unique=True, index=True)
-    uuid = Column(String, unique=True)
+    uuid = Column(String(63), unique=True)
     
     chats = relationship('Chat', back_populates='user')
     diaries = relationship('Diary', back_populates='user')
@@ -18,7 +18,7 @@ class Chat(Base):
     __tablename__ = 'chats'
     
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String)
+    content = Column(String(1023))
     post_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))
     
@@ -29,8 +29,8 @@ class Diary(Base):
     __tablename__ = 'diaries'
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    content = Column(String)
+    title = Column(String(63))
+    content = Column(String(1023))
     post_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))
     

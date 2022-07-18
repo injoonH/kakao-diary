@@ -1,13 +1,14 @@
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
-from db import crud, models, schemas
-from db.database import SessionLocal, engine
+import crud, models, schemas
+from database import SessionLocal, engine
 import kakao
 import chatbot
 
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
 
 # Dependency
 def get_db():
@@ -16,6 +17,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+last_questions = {}
 
 
 @app.post('/users/{nickname}/chats', response_model=schemas.Chat)
@@ -37,10 +41,15 @@ def create_chat_for_user(
     else:
         print('user found in DB', db_user)
     
-    # chats = crud.get_user_chats(db=db, user_id=db_user.id)
-    # print('chats', chats)
+    prev_question = last_questions.get(db_user.uuid)
+    if prev_question is None:
+        prev_question = ''
     
-    response = chatbot.get_chat_response(chat.content)
-    kakao.send_message(db_user.uuid, response)
+    new_question = chatbot.get_chat_response(chat.answer)
+    last_questions[db_user.uuid] = new_question
+    kakao.send_message(db_user.uuid, new_question)
     
-    return crud.create_user_chat(db=db, chat=chat, user_id=db_user.id)
+    return crud.create_user_chat(db=db,
+                                 user_id=db_user.id,
+                                 question=prev_question,
+                                 chat=chat)

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from .database import Base
+from database import Base
 
 
 class User(Base):
@@ -18,7 +18,8 @@ class Chat(Base):
     __tablename__ = 'chats'
     
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String(1023))
+    question = Column(String(1023))
+    answer = Column(String(1023))
     post_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))
     

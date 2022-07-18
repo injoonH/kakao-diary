@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+import models, schemas
 
 
 def get_user(db: Session, user_id: int):
@@ -30,8 +30,12 @@ def get_user_chats(db: Session, user_id: int, skip: int = 0, limit: int = 100):
         .all()
 
 
-def create_user_chat(db: Session, chat: schemas.ChatCreate, user_id: int):
-    db_chat = models.Chat(**chat.dict(), user_id=user_id)
+def create_user_chat(
+        db: Session,
+        user_id: int,
+        question: str,
+        chat: schemas.ChatCreate):
+    db_chat = models.Chat(**chat.dict(), user_id=user_id, question=question)
     db.add(db_chat)
     db.commit()
     db.refresh(db_chat)

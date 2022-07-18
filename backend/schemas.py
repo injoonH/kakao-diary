@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class ChatBase(BaseModel):
-    content: str
+    answer: str
     post_date: date
 
 
@@ -14,6 +14,7 @@ class ChatCreate(ChatBase):
 class Chat(ChatBase):
     id: int
     user_id: int
+    question: str
 
     class Config:
         orm_mode = True

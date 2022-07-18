@@ -21,6 +21,7 @@ def get_auth_code() -> None:
         'client_id': REST_API_KEY,
         'redirect_uri': REDIRECT_URI,
         'response_type': 'code',
+        'scope': 'talk_message,friends',
     }
     auth_res = requests.get(KAKAO_AUTH_URL, params=payload)
     print(auth_res.url)
@@ -46,6 +47,7 @@ def get_friends():
         'Authorization': f'Bearer {ACCESS_TOKEN}'
     }
     response = requests.get(KAKAO_FRIENDS_URL, headers=header).json()
+    print(response)
     friends = response.get('elements')
     print(friends)
     return friends
@@ -81,5 +83,9 @@ def send_message(uuid: str, message: str) -> None:
 if __name__ == '__main__':
     # get_auth_code()
     # get_access_token()
+    
     friends = get_friends()
-    send_message(friends[0].get('uuid'), 'lorem ipsum')
+    # if friends:
+    #     send_message(friends[0].get('uuid'), 'lorem ipsum')
+    # else:
+    #     print('no friends')

@@ -43,12 +43,6 @@ const HomeScreen = ({ navigation }) => {
                         'stylesheet.calendar.header': {
                             week: styles.week
                         },
-                        // 'stylesheet.calender.arrowImage': {
-                        //     arrow: styles.arrow
-                        // },
-                        // 'stylesheet.calendar.disabledArrowImage': {
-                        //     tintColor: appStyle.disabledArrowColor
-                        // },
                         backgroundColor: '#F5F5F5',
                         calendarBackground: '#F5F5F5',
                         dotColor: '#B4C49A',

@@ -52,11 +52,17 @@ const DiaryScreen = ({ navigation, route }) => {
                         >
                             <FontAwesome5 name="check" size={25} color="#B4C49A"/>
                         </Pressable>
-                        <View style={styles.title}>
-                            <TextInput style={styles.title_text} value={ title } onChangeText={setTitle} />
+                        <View style={[styles.title]}>
+                            <TextInput style={styles.title_text} value={ title } onChangeText={setTitle}/>
                         </View>
                         <View style={styles.body}>
-                            <TextInput style={styles.body_text} value={ content } onChangeText={setContent} multiline />
+                            <TextInput
+                                style={styles.body_text}
+                                value={ content }
+                                onChangeText={setContent}
+                                multiline
+                                autoFocus={true}
+                            />
                         </View>
                     </>
                 ) : (

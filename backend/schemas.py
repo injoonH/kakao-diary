@@ -1,10 +1,10 @@
-from datetime import date
+import datetime
 from pydantic import BaseModel
 
 
 class ChatBase(BaseModel):
     answer: str
-    post_date: date
+    post_date: datetime.date
 
 
 class ChatCreate(ChatBase):
@@ -23,7 +23,7 @@ class Chat(ChatBase):
 class DiaryBase(BaseModel):
     title: str
     content: str
-    post_date: date
+    post_date: datetime.date
 
 
 class DiaryCreate(DiaryBase):

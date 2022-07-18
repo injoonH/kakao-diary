@@ -30,7 +30,7 @@ class Diary(Base):
     __tablename__ = 'diaries'
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(63))
+    title = Column(String(1023))
     content = Column(String(1023))
     post_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))

@@ -26,6 +26,7 @@ last_questions = {}
 def create_chat_for_user(
     nickname: str, chat: schemas.ChatCreate, db: Session = Depends(get_db)
 ):
+    # Get user
     db_user = crud.get_user_by_nickname(db=db, nickname=nickname)
     if db_user is None:
         print('user not found')
@@ -33,23 +34,51 @@ def create_chat_for_user(
         if uuid is None:
             print('user not in friends list')
             return
-        print('uuid', uuid)
+        print(f'{uuid = }')
         db_user = crud.create_user(
             db=db,
             user=schemas.UserCreate(nickname=nickname, uuid=uuid)
         )
     else:
-        print('user found in DB', db_user)
+        print(f'{nickname} found in DB')
     
+    # Get previous question
     prev_question = last_questions.get(db_user.uuid)
     if prev_question is None:
         prev_question = ''
     
-    new_question = chatbot.get_chat_response(chat.answer)
-    last_questions[db_user.uuid] = new_question
-    kakao.send_message(db_user.uuid, new_question)
+    # Save chat in DB
+    db_chat = crud.create_user_chat(db=db,
+                                    user_id=db_user.id,
+                                    question=prev_question,
+                                    chat=chat)
     
-    return crud.create_user_chat(db=db,
-                                 user_id=db_user.id,
-                                 question=prev_question,
-                                 chat=chat)
+    # Get previous chats
+    print('==== DATE ====')
+    print(chat.post_date)
+    prev_chats = crud.get_user_chats_on_date(db=db,
+                                             user_id=db_user.id,
+                                             date=chat.post_date)
+    if len(prev_chats) > 3:
+        prev_chats = prev_chats[-3:]
+    
+    # Check if user wants to end a conversation
+    if 'bye' in chat.answer.lower():
+        last_questions.pop(db_user.uuid, None)
+        diary_title, diary_content = chatbot.get_diary(prev_chats=prev_chats)
+        crud.create_user_diary(db=db,
+                               user_id=db_user.id,
+                               diary=schemas.DiaryCreate(
+                                   title=diary_title,
+                                   content=diary_content,
+                                   post_date=chat.post_date))
+        return db_chat
+    
+    # Create next question & send it to user
+    print('==== USER CHAT ====')
+    print(chat.answer)
+    new_question = chatbot.get_chat_response(prev_chats=prev_chats)
+    last_questions[db_user.uuid] = new_question
+    # kakao.send_message(db_user.uuid, new_question)
+    
+    return db_chat

@@ -94,6 +94,7 @@ const DiaryScreen = ({ navigation, route }) => {
                                 style={ styles.title_text }
                                 value={ title }
                                 onChangeText={ setTitle }
+                                multiline
                             />
                         </View>
                         <View style={ styles.body }>
@@ -135,25 +136,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        flex: 2,
+        flex: 3,
         marginTop: -40,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: '#B4C49A',
+        marginHorizontal: 60,
     },
     body: {
         flex: 8,
-        //justifyContent: 'center',
-        // alignItems: 'center',
         marginTop: 20,
-        marginLeft: 60,
-        marginRight: 60,
+        marginHorizontal: 60,
     },
     footer: {
         flex: 3,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: '#B4C49A'
     },
 
     // 요소

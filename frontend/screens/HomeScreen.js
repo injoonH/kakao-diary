@@ -47,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.circle}></View>
-            <View style={{ height: 465, zIndex: 1 }}>
+            <View style={{ height: 487, zIndex: 1 }}>
                 <Calendar
                     style={styles.calendar}
                     markedDates={markedDates}

@@ -81,10 +81,10 @@ def send_message(uuid: str, message: str) -> None:
 
 
 if __name__ == '__main__':
-    # get_auth_code()
+    get_auth_code()
     # get_access_token()
     
-    friends = get_friends()
+    # friends = get_friends()
     # if friends:
     #     send_message(friends[0].get('uuid'), 'lorem ipsum')
     # else:

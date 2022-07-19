@@ -27,7 +27,9 @@ def get_chat_response(prev_chats: list[models.Chat]) -> str:
         stop=['You:']
     )
     question = res.choices[0].text.replace('\n', '')
-    print('==== QUESTION ====')
+    print('==== BOT API ====')
+    print(res)
+    print('==== BOT RESPONSE ====')
     print(question)
     return question
 

@@ -60,8 +60,6 @@ def create_chat_for_user(
     prev_chats = crud.get_user_chats_on_date(db=db,
                                              user_id=db_user.id,
                                              date=chat.post_date)
-    if len(prev_chats) > 3:
-        prev_chats = prev_chats[-3:]
     
     # Check if user wants to end a conversation
     if 'bye' in chat.answer.lower():
@@ -74,6 +72,10 @@ def create_chat_for_user(
                                    content=diary_content,
                                    post_date=chat.post_date))
         return db_chat
+    
+    # Use last three chats to create next question
+    if len(prev_chats) > 3:
+        prev_chats = prev_chats[-3:]
     
     # Create next question & send it to user
     print('==== USER CHAT ====')

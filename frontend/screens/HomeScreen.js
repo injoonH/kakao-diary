@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 
 LocaleConfig.locales['fr'] = {
     monthNames: [
@@ -27,11 +28,29 @@ LocaleConfig.defaultLocale = 'fr';
 const dayCircleDiameter = 60;
 
 const HomeScreen = ({ navigation }) => {
+    const [markedDates, setMarkedDates] = useState({});
+    useEffect(() => {
+        const fetchMarkedDates = async () => {
+            const res = await fetch('http://192.249.18.122:80/diaries');
+            const json = await res.json();
+
+            for (let date of json) {
+                setMarkedDates(currDates => {
+                    currDates[date.post_date] = { marked: true };
+                    return currDates;
+                })
+            }
+            console.log('markedDates', markedDates);
+        };
+        fetchMarkedDates();
+    }, [markedDates]);
     return (
         <View style={styles.container}>
             <View style={styles.circle}></View>
             <View style={{ height: 465, zIndex: 1 }}>
-                <Calendar style={styles.calendar}
+                <Calendar
+                    style={styles.calendar}
+                    markedDates={markedDates}
                     renderArrow={(direction) => {
                         return (
                             <FontAwesome5 name={`chevron-${direction}`} size={14} color='#B4C49A' />
@@ -57,7 +76,6 @@ const HomeScreen = ({ navigation }) => {
                         textMonthFontSize: 24,
                         textDayHeaderFontSize: 18,
                     }}
-                    markedDates={{'2022-07-17': {marked: true}}}
                     onDayPress={(day) => {
                         console.log('day pressed', day);
                         navigation.navigate('Diary', day.dateString);

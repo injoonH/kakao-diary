@@ -15,6 +15,8 @@ def get_prompt_from_chats(chats: list[models.Chat]) -> str:
 
 def get_chat_response(prev_chats: list[models.Chat]) -> str:
     prompt = get_prompt_from_chats(prev_chats) + '\nFriend:'
+    print('==== PROMPT ====')
+    print(prompt)
     
     res = openai.Completion.create(
         model='text-davinci-002',
@@ -37,19 +39,7 @@ def get_chat_response(prev_chats: list[models.Chat]) -> str:
 def get_diary(prev_chats: list[models.Chat]) -> str:
     prompt = get_prompt_from_chats(prev_chats)
     
-    title_command = 'Summarize my short hand into one sentence:'
-    content_command = 'Convert my short hand into a first-hand account of the meeting:'
-    
-    title_res = openai.Completion.create(
-        model='text-davinci-002',
-        prompt=title_command + '\n\n' + prompt,
-        temperature=0,
-        max_tokens=64,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=0.0
-    )
-    
+    content_command = 'Summarize my short hand into one sentence:'
     content_res = openai.Completion.create(
         model='text-davinci-002',
         prompt=content_command + '\n\n' + prompt,
@@ -59,9 +49,19 @@ def get_diary(prev_chats: list[models.Chat]) -> str:
         frequency_penalty=0.0,
         presence_penalty=0.0
     )
-    
-    title = title_res.choices[0].text.replace('\n', '')
     content = content_res.choices[0].text.replace('\n', '')
+    
+    title_command = 'Summarize my short hand into one sentence:'
+    title_res = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=title_command + '\n\n' + content,
+        temperature=0,
+        max_tokens=64,
+        top_p=1.0,
+        frequency_penalty=0.0,
+        presence_penalty=0.0
+    )
+    title = title_res.choices[0].text.replace('\n', '')
     
     print('==== DIARY TITLE ====')
     print(title)

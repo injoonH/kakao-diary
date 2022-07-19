@@ -31,10 +31,10 @@ def create_chat_for_user(
     # Get user
     db_user = crud.get_user_by_nickname(db=db, nickname=nickname)
     if db_user is None:
-        print('user not found')
+        print('User not found')
         uuid = kakao.get_friend_uuid_by_nickname(nickname)
         if uuid is None:
-            print('user not in friends list')
+            print('User not in friends list')
             return
         print(f'{uuid = }')
         db_user = crud.create_user(
@@ -42,6 +42,7 @@ def create_chat_for_user(
             user=schemas.UserCreate(nickname=nickname, uuid=uuid)
         )
     else:
+        print('==== USER ====')
         print(f'{nickname} found in DB')
     
     # Get previous question
@@ -68,9 +69,13 @@ def create_chat_for_user(
                                              date=chat.post_date)
     
     # Check if user wants to end a conversation
-    if 'bye' in chat.answer.lower():
+    if '!!!' in chat.answer.lower():
         last_questions.pop(db_user.uuid, None)
         diary_title, diary_content = chatbot.get_diary(prev_chats=prev_chats)
+        
+        diary_title = papago.get_translate(diary_title, toEnglish=False)
+        diary_content = papago.get_translate(diary_content, toEnglish=False)
+        
         crud.create_user_diary(db=db,
                                user_id=db_user.id,
                                diary=schemas.DiaryCreate(
@@ -92,7 +97,7 @@ def create_chat_for_user(
     ko_new_question = papago.get_translate(new_question, toEnglish=False)
     print('==== En-Ko ====')
     print(ko_new_question)
-    # kakao.send_message(db_user.uuid, new_question)
+    kakao.send_message(db_user.uuid, ko_new_question)
     
     return db_chat
 

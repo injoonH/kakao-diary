@@ -21,8 +21,8 @@ class Chat(ChatBase):
 
 
 class DiaryBase(BaseModel):
-    title: str
-    content: str
+    title: str | None
+    content: str | None
     post_date: datetime.date
 
 

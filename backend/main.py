@@ -114,6 +114,6 @@ def read_diaries(date: datetime.date, db: Session = Depends(get_db)):
     return diaries
 
 
-@app.put('/diaries/{diary_id}', response_model=schemas.Diary)
+@app.put('/diaries/{diary_id}')
 def update_diary(diary_id: int, title: str, content: str, db: Session = Depends(get_db)):
-    return crud.update_diary(db=db, diary_id=diary_id, title=title, content=content)
+    crud.update_diary(db=db, diary_id=diary_id, title=title, content=content)

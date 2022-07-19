@@ -81,6 +81,7 @@ def get_diaries_on_date(db: Session, date: datetime.date):
 
 
 def update_diary(db: Session, diary_id: int, title: str, content: str):
-    return db.query(models.Diary) \
+    db.query(models.Diary) \
         .filter(models.Diary.id == diary_id) \
         .update({'title': title, 'content': content})
+    db.commit()

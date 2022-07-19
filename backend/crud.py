@@ -63,3 +63,24 @@ def create_user_diary(db: Session, user_id: int, diary: schemas.DiaryCreate):
     db.commit()
     db.refresh(db_diary)
     return db_diary
+
+
+def get_diaries(db: Session, skip: int = 0, limit: int = 100):
+    return db \
+        .query(models.Diary) \
+        .offset(skip) \
+        .limit(limit) \
+        .all()
+
+
+def get_diaries_on_date(db: Session, date: datetime.date):
+    return db \
+        .query(models.Diary) \
+        .filter(models.Diary.post_date == date) \
+        .all()
+
+
+def update_diary(db: Session, diary_id: int, title: str, content: str):
+    return db.query(models.Diary) \
+        .filter(models.Diary.id == diary_id) \
+        .update({'title': title, 'content': content})

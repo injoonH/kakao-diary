@@ -1,3 +1,4 @@
+import datetime
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 import crud, models, schemas
@@ -82,3 +83,20 @@ def create_chat_for_user(
     # kakao.send_message(db_user.uuid, new_question)
     
     return db_chat
+
+
+@app.get('/diaries', response_model=list[schemas.Diary])
+def read_diaries(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    diaries = crud.get_diaries(db, skip=skip, limit=limit)
+    return diaries
+
+
+@app.get('/diaries/{date}', response_model=list[schemas.Diary])
+def read_diaries(date: datetime.date, db: Session = Depends(get_db)):
+    diaries = crud.get_diaries_on_date(db=db, date=date)
+    return diaries
+
+
+@app.put('/diaries/{diary_id}', response_model=schemas.Diary)
+def update_diary(diary_id: int, title: str, content: str, db: Session = Depends(get_db)):
+    return crud.update_diary(db=db, diary_id=diary_id, title=title, content=content)

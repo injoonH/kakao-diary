@@ -1,90 +1,124 @@
-import { StyleSheet, View, Text, Alert, Pressable, TextInput, KeyboardAvoidingView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { StyleSheet, View, Text, Pressable, TextInput } from 'react-native';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 
 const DiaryScreen = ({ navigation, route }) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [diaryId, setDiaryId] = useState(null);
 
     const date = route.params;
 
     useEffect(() => {
-        // 서버에서 title과 content 가져오기
-        setTitle('그라데이션 10cm');
-        setContent(
-`밤은 다시 길고 깊어졌네
-나는 점점 너로 잠 못 들게 돼
-글로 적어내긴 어려운 이 기분을
-너도 느꼈으면 좋겠는데
-\n
-너는 아무 생각 없이 몇 번
-나를 지나가며 웃은 거라지만
-나의 하얀 옷에 너의 잉크가 묻어
-닦아낼 수 없을 만큼 번졌네
-\n
-달콤한 색감이 물들어 조금씩
-정신을 차렸을 땐 알아볼 수도 없지
-가득 찬 마음이 여물다 못해 터지고 있어
-내일은 말을 걸어봐야지`);
-    }, []);
+        const fetchDiary = async () => {
+            const res = await fetch(`http://192.249.18.122:80/diaries/${date}`);
+            const json = await res.json();
+
+            if (json.length > 0) {
+                setTitle(json[0].title);
+                setContent(json[0].content);
+                setDiaryId(json[0].id);
+                return;
+            }
+
+            setDiaryId(-1);
+            
+            setTitle('Default Title');
+            setContent('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse feugiat sapien nisl, suscipit molestie ex hendrerit sed. Morbi ullamcorper mauris sit amet eleifend cursus. Nulla pharetra, nisl ut sollicitudin suscipit, mi nisi elementum neque, eu rutrum ex risus et mauris. Sed dictum ex nec eleifend fermentum. Quisque lacinia lacus neque, id sodales urna feugiat volutpat. Etiam malesuada justo a ex lobortis laoreet. Morbi ac risus eu ligula luctus dapibus in in ex. Proin quis nibh ut est tincidunt cursus non sed elit. Suspendisse arcu elit, luctus eget dictum quis, rutrum sit amet risus. Curabitur dictum libero cursus, feugiat ligula eget, sodales dolor. Praesent rutrum nisi vel varius vehicula. Aenean eu erat dignissim, molestie dui vitae, maximus nisl. Donec accumsan, magna in mollis sagittis, diam ante consectetur urna, vel feugiat leo diam ultricies ante. Phasellus maximus quis mauris ac bibendum. Suspendisse ac justo libero.');
+        };
+
+        fetchDiary();
+    }, [date]);
+
+    if (diaryId === null)
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>로딩 중...</Text>
+            </View>
+        );
+    
+    if (diaryId === -1)
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>해당 일자에 작성된 일기가 없습니다.</Text>
+            </View>
+        );
 
     return (
         <View style={{ flex: 1 }}>
-            <View style={styles.header}>
+            <View style={ styles.header }>
                 <Pressable
-                    style={styles.backBtn}
+                    style={ styles.backBtn }
                     onPress={() => navigation.goBack()}
                 >
-                    <FontAwesome5 name="chevron-left" size={28} color="#B4C49A" />
+                    <FontAwesome5 name='chevron-left' size={ 28 } color='#B4C49A' />
                 </Pressable>
-                <View style={styles.circle}>
-                    <Text style={styles.header_text}>{date.split('-')[2]}</Text>
+                <View style={ styles.circle }>
+                    <Text style={ styles.header_text }>{ date.split('-')[2] }</Text>
                 </View>
+                {
+                    isEditMode ? (
+                        <Pressable
+                            style={ styles.checkBtn }
+                            onPress={() => {
+                                // TODO: Save updated title & content in DB
+                                const updateDiary = async () => {
+                                    const res = await fetch(`http://192.249.18.122:80/diaries/${diaryId}?title=${title}&content=${content}`, { method: 'PUT' });
+                                    const json = await res.json();
+                                    console.log('json', json);
+                                };
+                                updateDiary();
+                                setIsEditMode(currMode => !currMode);
+                            }}
+                        >
+                            <FontAwesome5 name='check' size={ 25 } color='#B4C49A'/>
+                        </Pressable>
+                    ) : (
+                        <Pressable
+                            style={ styles.editBtn }
+                            onPress={() => {
+                                setIsEditMode(currMode => !currMode);
+                            }}
+                        >
+                            <MaterialIcons name='edit' size={ 27 } color='#B4C49A' />
+                        </Pressable>
+                    )
+                }
             </View>
             {
                 isEditMode ? (
                     <>
-                        <Pressable
-                            style={styles.checkBtn}
-                            onPress={() => setIsEditMode(currMode => !currMode)}
-                        >
-                            <FontAwesome5 name="check" size={25} color="#B4C49A"/>
-                        </Pressable>
-                        <View style={[styles.title]}>
-                            <TextInput style={styles.title_text} value={ title } onChangeText={setTitle}/>
-                        </View>
-                        <View style={styles.body}>
+                        <View style={ styles.title }>
                             <TextInput
-                                style={styles.body_text}
+                                style={ styles.title_text }
+                                value={ title }
+                                onChangeText={ setTitle }
+                            />
+                        </View>
+                        <View style={ styles.body }>
+                            <TextInput
+                                style={ styles.body_text }
                                 value={ content }
-                                onChangeText={setContent}
+                                onChangeText={ setContent }
                                 multiline
-                                autoFocus={true}
+                                autoFocus={ true }
                             />
                         </View>
                     </>
                 ) : (
                     <>
-                        <Pressable
-                            style={styles.editBtn}
-                            onPress={() => setIsEditMode(currMode => !currMode)}
-                        >
-                            <MaterialIcons name="edit" size={27} color="#B4C49A" />
-                        </Pressable>
-                        <View style={styles.title}>
-                            <Text style={styles.title_text}>{ title }</Text>
+                        <View style={ styles.title }>
+                            <Text style={ styles.title_text }>{ title }</Text>
                         </View>
-                        <View style={styles.body}>
-                            <Text style={styles.body_text}>{ content }</Text>
+                        <View style={ styles.body }>
+                            <Text style={ styles.body_text }>{ content }</Text>
                         </View>
                     </>
                 )
             }
-            
-            <View style={styles.footer}>
-                <Text style={styles.footer_text}>{ date }</Text>
+            <View style={ styles.footer }>
+                <Text style={ styles.footer_text }>{ date }</Text>
             </View>
         </View>
     )
@@ -139,13 +173,13 @@ const styles = StyleSheet.create({
 
     editBtn: {
         position: 'absolute',
-        top: 107,
+        top: 85,
         right: 22,
     },
 
     checkBtn: {
         position: 'absolute',
-        top: 107,
+        top: 85,
         right: 24,
     },
 

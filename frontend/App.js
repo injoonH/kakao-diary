@@ -15,7 +15,7 @@ const App = () => {
 
     if (!loaded) {
         return (
-            <View style={styles.root}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text>Loading Fonts...</Text>
             </View>
         )

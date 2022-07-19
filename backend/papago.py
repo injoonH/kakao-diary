@@ -10,11 +10,11 @@ CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 PAPAGO_URL = 'https://openapi.naver.com/v1/papago/n2mt'
 
 
-def get_translate(text):
-    if text[0].encode().isalpha():
-        a, b = 'en', 'ko'
-    else:
+def get_translate(text, toEnglish=True):
+    if toEnglish:
         a, b = 'ko', 'en'
+    else:
+        a, b = 'en', 'ko'
     
     data = {
         'text': text,

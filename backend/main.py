@@ -5,6 +5,7 @@ import crud, models, schemas
 from database import SessionLocal, engine
 import kakao
 import chatbot
+import papago
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -48,6 +49,11 @@ def create_chat_for_user(
     if prev_question is None:
         prev_question = ''
     
+    # Translate Korean to English
+    chat.answer = papago.get_translate(chat.answer, toEnglish=True)
+    print('==== Ko-En ====')
+    print(chat.answer)
+    
     # Save chat in DB
     db_chat = crud.create_user_chat(db=db,
                                     user_id=db_user.id,
@@ -82,6 +88,10 @@ def create_chat_for_user(
     print(chat.answer)
     new_question = chatbot.get_chat_response(prev_chats=prev_chats)
     last_questions[db_user.uuid] = new_question
+
+    ko_new_question = papago.get_translate(new_question, toEnglish=False)
+    print('==== En-Ko ====')
+    print(ko_new_question)
     # kakao.send_message(db_user.uuid, new_question)
     
     return db_chat
